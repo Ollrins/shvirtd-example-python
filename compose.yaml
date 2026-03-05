@@ -1,0 +1,57 @@
+include:
+  - proxy.yaml
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: fastapi-web
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.21.0.5
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.21.0.10
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
