@@ -10,7 +10,7 @@ services:
     restart: always
     networks:
       backend:
-        ipv4_address: 172.21.0.5
+        ipv4_address: 172.20.0.5
     ports:
       - "5000:5000"
     environment:
@@ -29,14 +29,14 @@ services:
     restart: always
     networks:
       backend:
-        ipv4_address: 172.21.0.10
+        ipv4_address: 172.20.0.10
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -54,4 +54,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.21.0.0/24
+        - subnet: 172.20.0.0/24
